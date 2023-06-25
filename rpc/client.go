@@ -318,15 +318,19 @@ func (c *Client) Call(result interface{}, method string, args ...interface{}) er
 // The result must be a pointer so that package json can unmarshal into it. You
 // can also pass nil, in which case the result is ignored.
 func (c *Client) CallContext(ctx context.Context, result interface{}, method string, args ...interface{}) error {
+	fmt.Println("2")
 	if result != nil && reflect.TypeOf(result).Kind() != reflect.Ptr {
 		return fmt.Errorf("call result parameter must be pointer or nil interface: %v", result)
 	}
+	fmt.Println("3")
 	msg, err := c.newMessage(method, args...)
+	fmt.Println("4")
 	if err != nil {
 		return err
 	}
+	fmt.Println("5")
 	op := &requestOp{ids: []json.RawMessage{msg.ID}, resp: make(chan *jsonrpcMessage, 1)}
-
+	fmt.Println("6")
 	if c.isHTTP {
 		err = c.sendHTTP(ctx, op, msg)
 	} else {
@@ -335,6 +339,7 @@ func (c *Client) CallContext(ctx context.Context, result interface{}, method str
 	if err != nil {
 		return err
 	}
+	fmt.Println("7")
 
 	// dispatch has accepted the request and will close the channel when it quits.
 	switch resp, err := op.wait(ctx, c); {
